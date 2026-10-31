@@ -1,0 +1,37 @@
+name = "snbdns-pages"
+main = "src/index.js"
+compatibility_date = "2024-12-05"
+workers_dev = true
+
+routes = [
+  { pattern = "pages.subdns.cc", custom_domain = true, zone_name = "subdns.cc" }
+]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "snbdns-pages"
+database_id = "74e1c413-fe54-4724-85c3-d2341cdd63a6"
+
+[[kv_namespaces]]
+binding = "SITES"
+id = "ca7aea7f7a5e48ddbeafdde1b89908f5"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "c18053db750f48c29c5f3ac4a646f3c6"
+
+[vars]
+PANEL_DOMAIN = "pages.subdns.cc"
+SITE_BASE_DOMAIN = "pages.subdns.cc"
+
+[triggers]
+crons = ["0 3 1 * *"]
+
+[observability]
+enabled = true
+

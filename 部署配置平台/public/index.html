@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>subdns Pages · 永久免费的静态站点托管</title>
+    <meta name="description" content="subdns Pages 提供永久免费的静态站点部署托管服务，自动分配 pages.subdns.cc 站点地址，支持一键部署、积分计费与活动奖励。">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230ea5e9'/%3E%3Cpath d='M10 20a4 4 0 0 1 .6-7.95A5.5 5.5 0 0 1 21 13.5a3.5 3.5 0 0 1-.5 6.5H10z' fill='%23fff'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #e0f2fe;
+            --secondary: #1e293b;
+            --secondary-dark: #0f172a;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --text-lighter: #94a3b8;
+            --bg-body: #ffffff;
+            --bg-alt: #f8fafc;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --radius-lg: 24px;
+            --shadow-card: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
+            --shadow-float: 0 20px 25px -5px rgba(0,0,0,.05), 0 10px 10px -5px rgba(0,0,0,.02);
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; transition: all .2s; }
+        code, .mono { font-family: 'JetBrains Mono', "Courier New", monospace; }
+
+        /* ---------- Header ---------- */
+        .site-header {
+            position: fixed; top: 0; width: 100%; z-index: 1030;
+            background: var(--secondary);
+            box-shadow: 0 4px 20px rgba(0,0,0,.1);
+            padding: 10px 0;
+        }
+        .site-header .bar { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 16px; }
+        .brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 1.12rem; }
+        .brand-mark {
+            width: 34px; height: 34px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            display: grid; place-items: center; color: #fff; font-size: 15px;
+            box-shadow: 0 4px 14px rgba(14,165,233,.45);
+        }
+        .brand small { display: block; font-size: .68rem; font-weight: 400; color: rgba(255,255,255,.55); letter-spacing: .04em; }
+        .nav-links { display: flex; gap: 26px; margin-left: 28px; }
+        .nav-links a { color: rgba(255,255,255,.75); font-size: .9rem; font-weight: 500; }
+        .nav-links a:hover { color: #fff; }
+        .header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+        .btn-pill {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 26px; border-radius: 100px; font-weight: 600; font-size: .92rem;
+            border: none; transition: all .2s; cursor: pointer;
+        }
+        .btn-primary-pill { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(14,165,233,.3); }
+        .btn-primary-pill:hover { background: var(--primary-dark); color: #fff; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(14,165,233,.4); }
+        .btn-ghost-pill { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.16); }
+        .btn-ghost-pill:hover { background: rgba(255,255,255,.16); color: #fff; }
+        .btn-outline-pill { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline-pill:hover { border-color: var(--primary); color: var(--primary); background: #fff; }
+
+        .nav-credit {
+            background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.18);
+            padding: 6px 14px; border-radius: 100px; font-size: .82rem; font-weight: 600;
+        }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            padding: 150px 0 90px;
+            background: radial-gradient(circle at 50% 0%, #f0f9ff 0%, #ffffff 70%);
+            text-align: center;
+        }
+        .badge-soft {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 14px; background: var(--primary-light); color: var(--primary-dark);
+            border-radius: 100px; font-size: .8rem; font-weight: 600;
+        }
+        .hero h1 {
+            font-size: 3.1rem; font-weight: 800; color: var(--secondary);
+            line-height: 1.12; letter-spacing: -.03em; margin: 18px 0 16px;
+        }
+        .hero h1 .grad { background: linear-gradient(120deg, var(--primary), #6366f1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero p.lead-text { font-size: 1.1rem; color: var(--text-light); max-width: 680px; margin: 0 auto 30px; }
+        .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .hero-stats { margin-top: 42px; display: flex; gap: 46px; justify-content: center; flex-wrap: wrap; }
+        .hero-stats .num { font-size: 1.7rem; font-weight: 700; color: var(--secondary); }
+        .hero-stats .lbl { font-size: .82rem; color: var(--text-light); }
+
+        .url-pill {
+            display: inline-flex; align-items: center; gap: 10px; margin-top: 26px;
+            background: #fff; border: 1px solid var(--border); border-radius: 100px;
+            padding: 10px 20px; font-family: 'JetBrains Mono', monospace; font-size: .86rem;
+            color: var(--text-main); box-shadow: var(--shadow-card);
+        }
+        .url-pill i { color: var(--primary); }
+
+        /* ---------- Sections ---------- */
+        .section { padding: 78px 0; }
+        .bg-alt { background: var(--bg-alt); }
+        .section-head { text-align: center; max-width: 700px; margin: 0 auto 44px; }
+        .section-head h2 { font-size: 2rem; font-weight: 700; color: var(--secondary); letter-spacing: -.02em; }
+        .section-head p { color: var(--text-light); margin: 10px 0 0; }
+
+        .feature-card {
+            background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 26px; height: 100%; transition: all .2s; box-shadow: var(--shadow-card);
+        }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-float); border-color: #cbd5e1; }
+        .feature-ico {
+            width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+            background: var(--primary-light); color: var(--primary-dark); font-size: 18px; margin-bottom: 16px;
+        }
+        .feature-card h5 { font-size: 1rem; font-weight: 700; color: var(--secondary); margin-bottom: 8px; }
+        .feature-card p { font-size: .88rem; color: var(--text-light); margin: 0; }
+
+        .price-card {
+            background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
+            padding: 30px; text-align: center; height: 100%; box-shadow: var(--shadow-card);
+            transition: all .2s;
+        }
+        .price-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-float); }
+        .price-card .big { font-size: 2.3rem; font-weight: 800; color: var(--secondary); line-height: 1.1; }
+        .price-card .big small { font-size: .9rem; font-weight: 500; color: var(--text-light); }
+        .price-card .cap { font-size: .84rem; color: var(--text-light); }
+
+        /* Activity cards */
+        .activity-card {
+            background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--primary);
+            border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow-card); height: 100%;
+        }
+        .activity-card h6 { font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
+        .activity-card .desc { font-size: .87rem; color: var(--text-light); margin-bottom: 10px; }
+        .activity-meta { font-size: .76rem; color: var(--text-lighter); font-family: 'JetBrains Mono', monospace; }
+        .activity-value { color: var(--primary-dark); font-weight: 700; }
+
+        /* ---------- Dashboard ---------- */
+        .dash-hero {
+            background: linear-gradient(135deg, var(--secondary) 0%, #263449 100%);
+            color: #fff; border-radius: var(--radius-lg); padding: 30px 32px; margin-bottom: 26px;
+            box-shadow: var(--shadow-float);
+        }
+        .dash-hero h2 { font-size: 1.45rem; font-weight: 700; margin: 0; }
+        .dash-hero .sub { color: rgba(255,255,255,.6); font-size: .86rem; margin-top: 4px; }
+        .dash-stat { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 14px 16px; }
+        .dash-stat .lbl { font-size: .74rem; color: rgba(255,255,255,.55); text-transform: uppercase; letter-spacing: .06em; }
+        .dash-stat .val { font-size: 1.35rem; font-weight: 700; }
+
+        .panel-card {
+            background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+            box-shadow: var(--shadow-card); overflow: hidden; margin-bottom: 26px;
+        }
+        .panel-card .head {
+            padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex;
+            align-items: center; justify-content: space-between; gap: 12px; background: #fff;
+        }
+        .panel-card .head h5 { font-size: 1rem; font-weight: 700; margin: 0; color: var(--secondary); }
+        .panel-card .head .hint { font-size: .8rem; color: var(--text-light); }
+
+        .table-clean { width: 100%; margin: 0; }
+        .table-clean thead th {
+            background: var(--bg-alt); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em;
+            color: var(--text-light); font-weight: 600; padding: 12px 16px; border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .table-clean tbody td { padding: 13px 16px; border-bottom: 1px solid #f1f5f9; font-size: .88rem; vertical-align: middle; }
+        .table-clean tbody tr:hover { background: #f8fbff; }
+        .table-clean tbody tr:last-child td { border-bottom: none; }
+
+        .chip {
+            display: inline-flex; align-items: center; gap: 6px; padding: 3px 11px; border-radius: 100px;
+            font-size: .76rem; font-weight: 600; background: var(--primary-light); color: var(--primary-dark);
+        }
+        .chip-path { font-family: 'JetBrains Mono', monospace; font-size: .74rem; }
+        .chip-green { background: #dcfce7; color: #15803d; }
+        .chip-amber { background: #fef3c7; color: #b45309; }
+        .chip-red { background: #fee2e2; color: #b91c1c; }
+        .chip-slate { background: #f1f5f9; color: #475569; }
+
+        .btn-mini {
+            display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 100px;
+            font-size: .76rem; font-weight: 600; border: 1px solid var(--border); background: #fff;
+            color: var(--text-main); cursor: pointer; transition: all .15s; white-space: nowrap;
+        }
+        .btn-mini:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-mini.danger:hover { border-color: #dc2626; color: #dc2626; }
+        .btn-mini.warn:hover { border-color: #d97706; color: #b45309; }
+        .btn-mini:disabled { opacity: .45; cursor: not-allowed; }
+
+        .empty-state { padding: 50px 20px; text-align: center; color: var(--text-light); }
+        .empty-state i { font-size: 2.4rem; color: #cbd5e1; margin-bottom: 14px; display: block; }
+        .empty-state p { margin: 0 0 6px; font-size: .9rem; }
+
+        .tabbar { display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+        .tabbar button {
+            background: none; border: none; padding: 12px 18px; font-size: .9rem; font-weight: 600;
+            color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 7px;
+        }
+        .tabbar button:hover { color: var(--primary-dark); }
+        .tabbar button.active { color: var(--primary-dark); border-bottom-color: var(--primary); }
+
+        /* Inputs */
+        .form-control, .form-select {
+            border-radius: 10px; border: 1px solid var(--border); padding: 10px 14px;
+            font-size: .9rem; color: var(--text-main); background: #fff;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light);
+        }
+        .form-label { font-size: .82rem; font-weight: 600; color: var(--text-light); margin-bottom: 6px; }
+        .input-group-text { border-radius: 10px 0 0 10px; background: var(--bg-alt); border-color: var(--border); font-size: .84rem; color: var(--text-light); }
+
+        /* Drop zone */
+        .drop-zone {
+            border: 2px dashed #cbd5e1; border-radius: 14px; padding: 30px; text-align: center;
+            cursor: pointer; transition: all .2s; background: var(--bg-alt);
+        }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--primary); background: #f0f9ff; }
+        .drop-zone i.big { font-size: 2.1rem; color: var(--primary); }
+        .file-list { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+        .path-cell { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'JetBrains Mono', monospace; font-size: .78rem; }
+
+        .view-content { white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; font-size: .82rem; }
+
+        /* Modals */
+        .modal-content { border: none; border-radius: 18px; box-shadow: 0 30px 60px rgba(15,23,42,.2); overflow: hidden; }
+        .modal-header { background: var(--secondary); color: #fff; border: none; padding: 18px 24px; }
+        .modal-header .modal-title { font-size: 1.02rem; font-weight: 700; }
+        .modal-body { padding: 22px 24px; }
+        .modal-footer { border-top: 1px solid var(--border); padding: 16px 24px; }
+        .modal-footer .btn { border-radius: 100px; padding: 9px 22px; font-weight: 600; font-size: .88rem; }
+        .modal-file-content { max-height: 60vh; overflow-y: auto; }
+
+        .toast-area { position: fixed; bottom: 22px; right: 20px; z-index: 1090; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
+        .toast-area .alert { border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-float); font-size: .86rem; padding: 12px 16px; }
+
+        /* Footer */
+        .site-footer { background: var(--secondary-dark); color: rgba(255,255,255,.6); padding: 54px 0 26px; margin-top: 40px; }
+        .site-footer h6 { color: #fff; font-size: .9rem; font-weight: 700; margin-bottom: 14px; }
+        .site-footer a { color: rgba(255,255,255,.6); font-size: .86rem; display: block; margin-bottom: 9px; }
+        .site-footer a:hover { color: #fff; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,.08); margin-top: 34px; padding-top: 20px; font-size: .8rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+        /* FAQ */
+        .faq-item { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: #fff; }
+        .faq-q { padding: 18px 22px; font-weight: 600; font-size: .94rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--secondary); }
+        .faq-a { padding: 0 22px 18px; color: var(--text-light); font-size: .88rem; display: none; }
+        .faq-item.open .faq-a { display: block; }
+        .faq-item.open .faq-q i { transform: rotate(180deg); }
+        .faq-q i { transition: transform .2s; color: var(--text-lighter); }
+
+        .admin-tabs .nav-link { font-size: .85rem; font-weight: 600; color: var(--text-light); }
+        .admin-tabs .nav-link.active { color: var(--primary-dark); }
+        .mini-table thead th { position: sticky; top: 0; background: var(--bg-alt); z-index: 1; }
+
+        @media (max-width: 991px) {
+            .nav-links { display: none; }
+            .hero { padding-top: 120px; }
+            .hero h1 { font-size: 2.2rem; }
+            .section { padding: 54px 0; }
+            .site-header .bar { gap: 10px; }
+            .brand small { display: none; }
+        }
+        @media (max-width: 575px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero-stats { gap: 26px; }
+            .header-actions .btn-pill { padding: 8px 16px; font-size: .82rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="bar">
+            <a class="brand" href="/">
+                <span class="brand-mark"><i class="fas fa-cloud"></i></span>
+                <span>subdns Pages<small>FREE STATIC HOSTING</small></span>
+            </a>
+            <nav class="nav-links">
+                <a href="#features">功能优势</a>
+                <a href="#pricing">计费规则</a>
+                <a href="#activities">活动中心</a>
+                <a href="#faq">常见问题</a>
+            </nav>
+            <div class="header-actions">
+                <span id="navCredits" class="nav-credit d-none"><i class="fas fa-coins me-1"></i>积分 0</span>
+                <button id="btnAdminNav" class="btn-pill btn-ghost-pill d-none"><i class="fas fa-shield-halved"></i>管理后台</button>
+                <button id="btnLoginNav" class="btn-pill btn-ghost-pill">登录</button>
+                <button id="btnRegisterNav" class="btn-pill btn-primary-pill">免费注册</button>
+                <button id="btnLogoutNav" class="btn-pill btn-ghost-pill d-none">退出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container" style="max-width:1200px">
+            <span class="badge-soft"><i class="fas fa-bolt"></i> 永久免费 · 即时部署 · 全球加速</span>
+            <h1>简单、快速、免费的<br><span class="grad">静态站点托管</span>服务</h1>
+            <p class="lead-text">
+                subdns Pages 为开发者、学生和开源爱好者提供稳定的站点托管。
+                无需服务器，无需备案，上传文件即可获得专属访问地址。
+            </p>
+            <div class="hero-cta">
+                <button class="btn-pill btn-primary-pill" id="btnHeroStart"><i class="fas fa-rocket"></i> 立即开始部署</button>
+                <a class="btn-pill btn-outline-pill" href="#features">了解更多</a>
+            </div>
+            <div class="url-pill">
+                <i class="fas fa-link"></i>
+                <span>pages.subdns.cc/pages/main/<span style="color:var(--primary-dark)">你的项目名</span></span>
+            </div>
+            <div class="hero-stats">
+                <div><div class="num" id="statUsers">-</div><div class="lbl">注册用户</div></div>
+                <div><div class="num" id="statSites">-</div><div class="lbl">托管站点</div></div>
+                <div><div class="num" id="statVisits">-</div><div class="lbl">站点访问</div></div>
+                <div><div class="num" id="statGift">100</div><div class="lbl">每月赠送积分</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section bg-alt" id="features">
+        <div class="container" style="max-width:1200px">
+            <div class="section-head">
+                <h2>为什么选择 subdns Pages？</h2>
+                <p>不只是免费。我们按开发者习惯构建体验。</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-ico"><i class="fas fa-infinity"></i></div>
+                        <h5>永久免费托管</h5>
+                        <p>静态站点托管长期免费，注册即送 1000 积分，每月再自动赠送 100 积分，拒绝隐形收费。</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-ico"><i class="fas fa-globe"></i></div>
+                        <h5>自动分配地址</h5>
+                        <p>创建项目即获得 <code>pages.subdns.cc/pages/main/项目名</code> 访问地址，部署完成立即可用。</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-ico"><i class="fas fa-cloud-arrow-up"></i></div>
+                        <h5>拖拽即部署</h5>
+                        <p>支持拖拽文件夹或选择多个文件上传，HTML、CSS、JS、图片等静态资源自动识别类型。</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-ico"><i class="fas fa-shield-halved"></i></div>
+                        <h5>安全隔离</h5>
+                        <p>PBKDF2 密码哈希、会话令牌隔离，每个站点独立存储，互不干扰。</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-ico"><i class="fas fa-users"></i></div>
+                        <h5>邀请拉新奖励</h5>
+                        <p>邀请好友注册，邀请人得 50 积分，被邀请人得 10 积分，邀请人数与奖励实时可查。</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-ico"><i class="fas fa-gift"></i></div>
+                        <h5>活动与充值</h5>
+                        <p>平台定期推出注册加赠、部署减免、充值返利等活动，支持在线充值订单审核。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section" id="pricing">
+        <div class="container" style="max-width:1200px">
+            <div class="section-head">
+                <h2>透明计费，按需使用</h2>
+                <p>积分制计费，所有数值公开透明。</p>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="price-card">
+                        <div class="feature-ico mx-auto" style="background:#dcfce7;color:#15803d"><i class="fas fa-gift"></i></div>
+                        <h6 class="fw-bold mt-2">注册赠送</h6>
+                        <div class="big"><span id="pSignup">1000</span><small> 积分</small></div>
+                        <div class="cap">新用户注册即到账</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="price-card">
+                        <div class="feature-ico mx-auto"><i class="fas fa-rocket"></i></div>
+                        <h6 class="fw-bold mt-2">每次部署</h6>
+                        <div class="big"><span id="pDeploy">2</span><small> 积分</small></div>
+                        <div class="cap">部署一次扣除</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="price-card">
+                        <div class="feature-ico mx-auto" style="background:#fef3c7;color:#b45309"><i class="fas fa-eye"></i></div>
+                        <h6 class="fw-bold mt-2">每次访问</h6>
+                        <div class="big"><span id="pVisit">0.1</span><small> 积分</small></div>
+                        <div class="cap">站点被访问一次</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="price-card">
+                        <div class="feature-ico mx-auto" style="background:#ede9fe;color:#6d28d9"><i class="fas fa-calendar-check"></i></div>
+                        <h6 class="fw-bold mt-2">每月赠送</h6>
+                        <div class="big"><span id="pMonthly">100</span><small> 积分</small></div>
+                        <div class="cap">每月自动到账</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="feature-card d-flex gap-3 align-items-start">
+                        <div class="feature-ico mb-0"><i class="fas fa-clock-rotate-left"></i></div>
+                        <div>
+                            <h5>有效期 <span id="pValidDays">180</span> 天</h5>
+                            <p>首次部署起算，过期前可随时续期。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature-card d-flex gap-3 align-items-start">
+                        <div class="feature-ico mb-0"><i class="fas fa-rotate-right"></i></div>
+                        <div>
+                            <h5>续期 <span id="pRenewDays">180</span> 天 / <span id="pRenewCost">10</span> 积分</h5>
+                            <p>过期后 <span id="pGrace">90</span> 天宽限期内可续期。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature-card d-flex gap-3 align-items-start">
+                        <div class="feature-ico mb-0"><i class="fas fa-user-plus"></i></div>
+                        <div>
+                            <h5>邀请奖励 <span id="pRefRef">50</span> / <span id="pRefNew">10</span></h5>
+                            <p>邀请人 / 被邀请人各得积分。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activities -->
+    <section class="section bg-alt" id="activities">
+        <div class="container" style="max-width:1200px">
+            <div class="section-head">
+                <h2><i class="fas fa-gift me-2" style="color:var(--primary)"></i>活动中心</h2>
+                <p>平台限时活动，登录后参与更划算。</p>
+            </div>
+            <div class="row g-4" id="activityList"></div>
+            <div id="activityEmpty" class="empty-state">
+                <i class="fas fa-calendar-day"></i>
+                <p>当前暂无进行中的活动</p>
+                <p style="font-size:.82rem">新的活动会第一时间在这里公布</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guest CTA / Dashboard -->
+    <section class="section" id="consoleSection">
+        <div class="container" style="max-width:1200px">
+            <!-- 未登录 -->
+            <div id="guestBanner">
+                <div class="price-card text-center" style="padding:52px 30px">
+                    <div class="feature-ico mx-auto" style="width:58px;height:58px;font-size:22px"><i class="fas fa-cloud-arrow-up"></i></div>
+                    <h2 class="fw-bold mt-3" style="color:var(--secondary);font-size:1.7rem">注册即可免费部署静态站点</h2>
+                    <p class="text-muted mb-4">自动分配 <code>pages.subdns.cc/pages/main/项目名</code> 站点地址 · 注册赠送 <span id="guestSignup">1000</span> 积分 · 部署仅需 <span id="guestDeploy">2</span> 积分</p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <button class="btn-pill btn-primary-pill" data-bs-toggle="modal" data-bs-target="#registerModal"><i class="fas fa-user-plus"></i> 立即注册</button>
+                        <button class="btn-pill btn-outline-pill" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fas fa-sign-in-alt"></i> 已有账号，登录</button>
+                    </div>
+                    <div id="bootstrapHint" class="d-none mt-3">
+                        <button class="btn-mini" id="btnOpenBootstrap"><i class="fas fa-user-shield me-1"></i>初始化管理员账号</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 已登录控制台 -->
+            <div id="dashboard" class="d-none">
+                <div class="dash-hero">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <h2><i class="fas fa-gauge-high me-2"></i>我的控制台</h2>
+                            <div class="sub">欢迎回来，<span id="dashUser">-</span> · 站点前缀 <code class="mono" style="color:#7dd3fc">/pages/main/</code></div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="nav-credit" id="dashDomain">-</span>
+                            <span class="nav-credit" id="dashInviteCode">-</span>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-3">
+                        <div class="col-lg-3 col-6"><div class="dash-stat"><div class="lbl">当前积分</div><div class="val" id="dashCredits">0</div></div></div>
+                        <div class="col-lg-3 col-6"><div class="dash-stat"><div class="lbl">我的项目</div><div class="val" id="dashProjects">0</div></div></div>
+                        <div class="col-lg-3 col-6"><div class="dash-stat"><div class="lbl">部署次数</div><div class="val" id="dashDeploys">0</div></div></div>
+                        <div class="col-lg-3 col-6"><div class="dash-stat"><div class="lbl">站点访问</div><div class="val" id="dashVisits">0</div></div></div>
+                    </div>
+                </div>
+
+                <div class="tabbar" id="mainTabs">
+                    <button class="active" data-tab="tabProjects"><i class="fas fa-layer-group"></i>我的项目</button>
+                    <button data-tab="tabActivities"><i class="fas fa-gift"></i>活动中心</button>
+                    <button data-tab="tabInvite"><i class="fas fa-user-plus"></i>邀请拉新</button>
+                    <button data-tab="tabRecharge"><i class="fas fa-credit-card"></i>充值</button>
+                    <button data-tab="tabCredits"><i class="fas fa-receipt"></i>积分明细</button>
+                </div>
+
+                <!-- 项目 -->
+                <div class="tab-panel" id="tabProjects">
+                    <div class="panel-card">
+                        <div class="head">
+                            <h5><i class="fas fa-layer-group me-2" style="color:var(--primary)"></i>我的项目</h5>
+                            <button class="btn-mini" id="btnNewProject" style="border-color:var(--primary);color:var(--primary)"><i class="fas fa-plus"></i>新建项目</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table-clean">
+                                <thead>
+                                    <tr>
+                                        <th>项目名称</th><th>站点地址</th><th>有效期</th>
+                                        <th>文件</th><th>大小</th><th>访问</th><th style="text-align:right">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="projectTbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="projectEmpty" class="empty-state d-none">
+                            <i class="fas fa-folder-open"></i>
+                            <p class="fw-bold">还没有项目</p>
+                            <p style="font-size:.84rem">点击「新建项目」，系统会自动分配站点地址</p>
+                            <button class="btn-pill btn-primary-pill mt-2" id="btnNewProject2"><i class="fas fa-plus"></i> 新建项目</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 活动 -->
+                <div class="tab-panel d-none" id="tabActivities">
+                    <div class="panel-card">
+                        <div class="head">
+                            <h5><i class="fas fa-gift me-2" style="color:var(--primary)"></i>进行中的活动</h5>
+                            <span class="hint">活动奖励自动发放到积分账户</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="row g-3" id="dashActivityList"></div>
+                            <div id="dashActivityEmpty" class="empty-state">
+                                <i class="fas fa-calendar-day"></i>
+                                <p>当前暂无进行中的活动</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 邀请 -->
+                <div class="tab-panel d-none" id="tabInvite">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="panel-card h-100">
+                                <div class="head"><h5><i class="fas fa-user-plus me-2" style="color:var(--primary)"></i>我的邀请</h5></div>
+                                <div class="p-4">
+                                    <label class="form-label">邀请码</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control mono" id="inviteCode" readonly>
+                                        <button class="btn btn-outline-secondary" id="btnCopyCode"><i class="fas fa-copy"></i></button>
+                                    </div>
+                                    <label class="form-label">邀请链接</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control mono" id="inviteUrl" readonly style="font-size:.78rem">
+                                        <button class="btn btn-outline-secondary" id="btnCopyUrl"><i class="fas fa-copy"></i></button>
+                                    </div>
+                                    <div class="row g-2 mt-3">
+                                        <div class="col-6"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">邀请奖励</div><div class="val" id="inviteReward" style="color:var(--secondary)">50</div></div></div>
+                                        <div class="col-6"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">被邀请奖励</div><div class="val" id="inviteeReward" style="color:var(--secondary)">10</div></div></div>
+                                        <div class="col-6"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">已邀请</div><div class="val" id="inviteCount" style="color:var(--secondary)">0</div></div></div>
+                                        <div class="col-6"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">累计奖励</div><div class="val" id="inviteTotal" style="color:var(--secondary)">0</div></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="panel-card h-100">
+                                <div class="head"><h5><i class="fas fa-list me-2" style="color:var(--primary)"></i>已邀请用户</h5></div>
+                                <div class="table-responsive">
+                                    <table class="table-clean">
+                                        <thead><tr><th>用户名</th><th>注册时间</th><th>积分</th></tr></thead>
+                                        <tbody id="inviteTbody"></tbody>
+                                    </table>
+                                </div>
+                                <div id="inviteEmpty" class="empty-state d-none">
+                                    <i class="fas fa-user-friends"></i>
+                                    <p>还没有邀请到用户</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 充值 -->
+                <div class="tab-panel d-none" id="tabRecharge">
+                    <div class="row g-4">
+                        <div class="col-lg-5">
+                            <div class="panel-card">
+                                <div class="head"><h5><i class="fas fa-credit-card me-2" style="color:var(--primary)"></i>充值积分</h5></div>
+                                <div class="p-4">
+                                    <div id="rechargeError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                                    <div class="mb-3">
+                                        <label class="form-label">充值金额（元）</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">¥</span>
+                                            <input type="number" class="form-control" id="rechargeAmount" min="1" step="1" value="10">
+                                        </div>
+                                        <div class="form-text" style="font-size:.76rem">1 元 = 100 积分，提交后由管理员审核到账。</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">支付方式</label>
+                                        <select class="form-select" id="rechargeMethod">
+                                            <option value="alipay">支付宝</option>
+                                            <option value="wechat">微信支付</option>
+                                            <option value="qq">QQ 钱包</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">联系方式（选填）</label>
+                                        <input type="text" class="form-control" id="rechargeContact" placeholder="邮箱 / QQ / 手机号">
+                                    </div>
+                                    <button class="btn-pill btn-primary-pill w-100" id="btnCreateOrder"><i class="fas fa-file-invoice"></i> 提交充值订单</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="panel-card">
+                                <div class="head"><h5><i class="fas fa-list me-2" style="color:var(--primary)"></i>我的充值记录</h5></div>
+                                <div class="table-responsive">
+                                    <table class="table-clean">
+                                        <thead><tr><th>订单号</th><th>金额</th><th>积分</th><th>方式</th><th>状态</th><th>时间</th></tr></thead>
+                                        <tbody id="orderTbody"></tbody>
+                                    </table>
+                                </div>
+                                <div id="orderEmpty" class="empty-state d-none">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <p>暂无充值记录</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 积分明细 -->
+                <div class="tab-panel d-none" id="tabCredits">
+                    <div class="panel-card">
+                        <div class="head"><h5><i class="fas fa-receipt me-2" style="color:var(--primary)"></i>积分明细</h5></div>
+                        <div class="table-responsive">
+                            <table class="table-clean">
+                                <thead><tr><th>时间</th><th>类型</th><th>说明</th><th>变动</th><th>余额</th></tr></thead>
+                                <tbody id="logTbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="logEmpty" class="empty-state d-none">
+                            <i class="fas fa-receipt"></i>
+                            <p>暂无积分记录</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section bg-alt" id="faq">
+        <div class="container" style="max-width:860px">
+            <div class="section-head">
+                <h2>常见问题</h2>
+                <p>关于托管、计费与续期</p>
+            </div>
+            <div class="faq-item open">
+                <div class="faq-q">托管真的免费吗？<i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">注册即赠送 1000 积分，每月再自动赠送 100 积分。部署一次消耗 2 积分，站点被访问一次消耗 0.1 积分，除此之外没有任何隐藏费用。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">站点地址是什么格式？<i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">每个项目会自动分配独立地址：<code>https://pages.subdns.cc/pages/main/项目名</code>，部署完成后即可直接访问。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">站点有效期多久？如何续期？<i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">站点自首次部署起有效 180 天。过期后进入 90 天宽限期，宽限期内站点仍可访问但会显示续期提示；超过宽限期后需续期（10 积分 / 180 天）才能恢复访问。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">积分用完了怎么办？<i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">可以通过三种方式获得积分：每月自动赠送 100 积分、邀请好友注册获得奖励、在控制台提交充值订单（1 元 = 100 积分）。</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">支持哪些文件类型？<i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">支持 HTML、CSS、JavaScript、JSON、Markdown、SVG、图片、字体等静态资源。单个项目总大小上限 20MB，上传即自动识别 MIME 类型。</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container" style="max-width:1200px">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="brand mb-3" style="color:#fff">
+                        <span class="brand-mark"><i class="fas fa-cloud"></i></span>
+                        <span>subdns Pages<small>FREE STATIC HOSTING</small></span>
+                    </div>
+                    <p style="font-size:.86rem;max-width:380px">
+                        由 subdns.cc 驱动的免费静态站点托管平台，托管于 Cloudflare Workers 全球边缘网络。
+                    </p>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h6>平台</h6>
+                    <a href="#features">功能优势</a>
+                    <a href="#pricing">计费规则</a>
+                    <a href="#activities">活动中心</a>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h6>控制台</h6>
+                    <a href="#" data-open-login>登录</a>
+                    <a href="#" data-open-register>注册</a>
+                    <a href="#consoleSection">我的项目</a>
+                </div>
+                <div class="col-lg-3">
+                    <h6>站点地址</h6>
+                    <a href="#" class="mono" style="font-size:.78rem">pages.subdns.cc/pages/main/项目名</a>
+                    <div style="font-size:.78rem;margin-top:8px">托管于 Cloudflare Workers</div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© <span id="footerYear">2026</span> subdns Pages · 域名由 subdns.cc 分发</span>
+                <span>Powered by Cloudflare Workers</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============ 弹窗 ============ -->
+
+    <!-- 登录 -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sign-in-alt me-2"></i>登录 subdns Pages</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loginError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">用户名或邮箱</label>
+                            <input type="text" class="form-control" id="loginAccount" required placeholder="例如 alice 或 alice@example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-control" id="loginPassword" required placeholder="请输入密码">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnDoLogin"><i class="fas fa-right-to-bracket me-1"></i>登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册 -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>注册 subdns Pages</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="registerError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <div id="registerRefBox" class="alert alert-success py-2 small d-none" style="border-radius:10px">
+                        <i class="fas fa-gift me-1"></i>使用邀请码 <strong id="registerRefCode"></strong> 注册，可额外获得 <strong id="registerRefBonus">10</strong> 积分
+                    </div>
+                    <div class="alert py-2 small" style="border-radius:10px;background:var(--primary-light);border-color:#bae6fd;color:var(--primary-dark)">
+                        <i class="fas fa-gift me-1"></i>注册成功立即赠送 <strong>1000</strong> 积分
+                    </div>
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">用户名</label>
+                            <input type="text" class="form-control" id="regUsername" required placeholder="3-24 位字母、数字、_ . -">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="regEmail" required placeholder="you@example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-control" id="regPassword" required placeholder="至少 6 位">
+                        </div>
+                        <div class="mb-1">
+                            <label class="form-label">邀请码（选填）</label>
+                            <input type="text" class="form-control mono" id="regRef" placeholder="填写好友邀请码，双方都有奖励">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnDoRegister"><i class="fas fa-user-plus me-1"></i>注册并登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 初始化管理员 -->
+    <div class="modal fade" id="bootstrapModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#b45309">
+                    <h5 class="modal-title"><i class="fas fa-user-shield me-2"></i>初始化管理员</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="bootstrapError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <div class="alert alert-warning py-2 small" style="border-radius:10px">
+                        <i class="fas fa-exclamation-triangle me-1"></i>系统尚未设置管理员，该入口仅在没有任何管理员时可用。
+                    </div>
+                    <form id="bootstrapForm">
+                        <div class="mb-3"><label class="form-label">管理员用户名</label><input type="text" class="form-control" id="bsUsername" required placeholder="3-24 位字母、数字、_ . -"></div>
+                        <div class="mb-3"><label class="form-label">邮箱</label><input type="email" class="form-control" id="bsEmail" placeholder="选填，默认 username@subdns.cc"></div>
+                        <div class="mb-3"><label class="form-label">密码</label><input type="password" class="form-control" id="bsPassword" required placeholder="至少 6 位"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-warning" id="btnDoBootstrap"><i class="fas fa-shield-halved me-1"></i>创建管理员</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建项目 -->
+    <div class="modal fade" id="projectModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>新建项目</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="projectError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <div class="mb-3">
+                        <label class="form-label">项目名称</label>
+                        <input type="text" class="form-control" id="projectName" placeholder="例如 my-blog">
+                        <div class="form-text" style="font-size:.78rem">仅支持字母、数字和短横线，将用于生成站点地址。</div>
+                    </div>
+                    <div class="alert py-2 small mb-0" style="border-radius:10px;background:var(--primary-light);border-color:#bae6fd;color:var(--primary-dark)">
+                        <i class="fas fa-link me-1"></i>将分配地址 <strong>pages.subdns.cc/pages/main/项目名</strong>，部署后立即可用，有效期 <strong>180 天</strong>。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnDoCreateProject"><i class="fas fa-check me-1"></i>创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 部署 -->
+    <div class="modal fade" id="deployModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-rocket me-2"></i>部署项目</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="deployError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div>
+                            <span class="text-muted small">目标站点</span>
+                            <div><span class="chip chip-path" id="deployDomain">-</span></div>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small">本次消耗</span>
+                            <div><span class="chip chip-amber" id="deployCost">2 积分</span></div>
+                        </div>
+                    </div>
+                    <div class="drop-zone mb-3" id="dropZone">
+                        <i class="fas fa-cloud-arrow-up big"></i>
+                        <p class="mb-1 mt-2 fw-bold">点击选择文件，或拖拽文件 / 文件夹到此处</p>
+                        <p class="text-muted small mb-0">支持 HTML / CSS / JS / 图片等静态资源，单项目不超过 20MB</p>
+                        <input type="file" id="fileInput" multiple class="d-none">
+                        <input type="file" id="dirInput" webkitdirectory directory multiple class="d-none">
+                    </div>
+                    <div class="d-flex gap-2 mb-2 flex-wrap">
+                        <button class="btn-mini" id="btnPickFiles"><i class="fas fa-file"></i>选择文件</button>
+                        <button class="btn-mini" id="btnPickDir"><i class="fas fa-folder"></i>选择文件夹</button>
+                        <button class="btn-mini danger" id="btnClearFiles"><i class="fas fa-trash"></i>清空</button>
+                    </div>
+                    <div class="file-list">
+                        <table class="table-clean">
+                            <thead><tr><th>文件路径</th><th style="width:110px;text-align:right">大小</th></tr></thead>
+                            <tbody id="fileTbody"></tbody>
+                        </table>
+                        <div id="fileEmpty" class="empty-state" style="padding:28px">
+                            <i class="fas fa-file-circle-plus" style="font-size:1.6rem"></i>
+                            <p style="font-size:.84rem">尚未选择文件</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnDoDeploy"><i class="fas fa-rocket me-1"></i>开始部署</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 续期 -->
+    <div class="modal fade" id="renewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#b45309">
+                    <h5 class="modal-title"><i class="fas fa-rotate-right me-2"></i>站点续期</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="renewError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <p class="mb-2">站点 <strong class="mono" id="renewDomain">-</strong></p>
+                    <ul class="list-group list-group-flush mb-3" style="font-size:.88rem">
+                        <li class="list-group-item d-flex justify-content-between"><span>当前状态</span><span id="renewState" class="fw-bold">-</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>已过期</span><span id="renewOverdue">0 天</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>宽限期</span><span id="renewGrace">90 天</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>续期时长</span><span id="renewDays">180 天</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>消耗积分</span><span class="text-danger fw-bold" id="renewCost">10</span></li>
+                    </ul>
+                    <div class="alert alert-info py-2 small mb-0" style="border-radius:10px">
+                        <i class="fas fa-info-circle me-1"></i>续期后有效期从原到期时间顺延，不足部分从今天补足。
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" id="btnDoRenew"><i class="fas fa-check me-1"></i>确认续期</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件查看 -->
+    <div class="modal fade" id="viewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-file me-2"></i><span id="modalFileName"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body modal-file-content">
+                    <div id="viewContent"></div>
+                    <div id="viewError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="btnCopy" onclick="copyContent()"><i class="fas fa-copy me-1"></i>复制内容</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 站点信息 -->
+    <div class="modal fade" id="domainModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-globe me-2"></i>站点信息</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="domainError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                    <div class="mb-3">
+                        <label class="form-label">站点地址</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control mono" id="domainUrl" readonly style="font-size:.8rem">
+                            <button class="btn btn-outline-secondary" id="btnCopyDomain"><i class="fas fa-copy"></i></button>
+                            <a class="btn btn-primary" id="btnOpenSite" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">有效期</label>
+                        <div id="domainExpire" class="text-muted small">-</div>
+                    </div>
+                    <label class="form-label">已部署文件</label>
+                    <div class="file-list">
+                        <table class="table-clean">
+                            <thead><tr><th>文件路径</th><th style="width:110px;text-align:right">大小</th><th style="width:80px"></th></tr></thead>
+                            <tbody id="domainFileTbody"></tbody>
+                        </table>
+                        <div id="domainFileEmpty" class="empty-state" style="padding:28px">
+                            <i class="fas fa-folder-open" style="font-size:1.6rem"></i>
+                            <p style="font-size:.84rem">该站点还没有部署文件</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理员后台 -->
+    <div class="modal fade" id="adminModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background:var(--secondary-dark)">
+                    <h5 class="modal-title"><i class="fas fa-shield-halved me-2"></i>管理员后台</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="adminError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-lg-2 col-4"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">用户</div><div class="val" id="asUsers" style="color:var(--secondary)">0</div></div></div>
+                        <div class="col-lg-2 col-4"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">站点</div><div class="val" id="asSites" style="color:var(--secondary)">0</div></div></div>
+                        <div class="col-lg-2 col-4"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">访问</div><div class="val" id="asVisits" style="color:var(--secondary)">0</div></div></div>
+                        <div class="col-lg-2 col-4"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">订单</div><div class="val" id="asOrders" style="color:var(--secondary)">0</div></div></div>
+                        <div class="col-lg-2 col-4"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">待审核</div><div class="val" id="asPending" style="color:#b45309">0</div></div></div>
+                        <div class="col-lg-2 col-4"><div class="dash-stat" style="background:var(--bg-alt);border-color:var(--border)"><div class="lbl" style="color:var(--text-light)">积分存量</div><div class="val" id="asCredits" style="color:var(--secondary)">0</div></div></div>
+                    </div>
+
+                    <ul class="nav nav-tabs admin-tabs mb-3" id="adminTabs">
+                        <li class="nav-item"><button class="nav-link active" data-atab="atabUsers"><i class="fas fa-users me-1"></i>用户</button></li>
+                        <li class="nav-item"><button class="nav-link" data-atab="atabOrders"><i class="fas fa-file-invoice me-1"></i>充值审核</button></li>
+                        <li class="nav-item"><button class="nav-link" data-atab="atabActivities"><i class="fas fa-gift me-1"></i>活动配置</button></li>
+                        <li class="nav-item"><button class="nav-link" data-atab="atabSettings"><i class="fas fa-sliders me-1"></i>计费设置</button></li>
+                        <li class="nav-item"><button class="nav-link" data-atab="atabProjects"><i class="fas fa-layer-group me-1"></i>站点</button></li>
+                        <li class="nav-item"><button class="nav-link" data-atab="atabLogs"><i class="fas fa-receipt me-1"></i>流水</button></li>
+                    </ul>
+
+                    <!-- 用户 -->
+                    <div class="atab-panel" id="atabUsers">
+                        <div class="d-flex gap-2 mb-2">
+                            <input type="text" class="form-control" id="adminUserQuery" placeholder="搜索用户名 / 邮箱 / 邀请码">
+                            <button class="btn-pill btn-outline-pill" id="btnAdminSearchUsers" style="padding:8px 18px"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="table-responsive" style="max-height:360px;overflow-y:auto">
+                            <table class="table-clean mini-table">
+                                <thead><tr><th>ID</th><th>用户名</th><th>邮箱</th><th>积分</th><th>邀请码</th><th>角色</th><th>状态</th><th style="text-align:right">操作</th></tr></thead>
+                                <tbody id="adminUserTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 订单 -->
+                    <div class="atab-panel d-none" id="atabOrders">
+                        <div class="table-responsive" style="max-height:420px;overflow-y:auto">
+                            <table class="table-clean mini-table">
+                                <thead><tr><th>订单号</th><th>用户</th><th>金额</th><th>积分</th><th>方式</th><th>状态</th><th>时间</th><th style="text-align:right">操作</th></tr></thead>
+                                <tbody id="adminOrderTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 活动配置 -->
+                    <div class="atab-panel d-none" id="atabActivities">
+                        <div id="actError" class="alert alert-danger d-none" style="border-radius:10px;font-size:.85rem"></div>
+                        <div class="panel-card" style="box-shadow:none;margin-bottom:18px">
+                            <div class="head"><h5><i class="fas fa-plus-circle me-2" style="color:var(--primary)"></i>新建 / 编辑活动</h5>
+                                <span class="hint" id="actEditHint">不选编辑时创建新活动</span>
+                            </div>
+                            <div class="p-3">
+                                <div class="row g-2">
+                                    <div class="col-md-6"><label class="form-label">活动标题</label><input type="text" class="form-control" id="actTitle" placeholder="例如：国庆注册加赠"></div>
+                                    <div class="col-md-6"><label class="form-label">活动类型</label>
+                                        <select class="form-select" id="actType">
+                                            <option value="signup_bonus">注册额外赠送积分</option>
+                                            <option value="deploy_discount">部署费用减免（填活动价）</option>
+                                            <option value="recharge_bonus">充值额外赠送（百分比）</option>
+                                            <option value="promo">展示型推广活动</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3"><label class="form-label">单次奖励</label><input type="number" class="form-control" id="actValue" step="0.01" value="50"></div>
+                                    <div class="col-md-3"><label class="form-label">奖池总额</label><input type="number" class="form-control" id="actPoolTotal" step="1" value="0" placeholder="0=不限制"></div>
+                                    <div class="col-md-3"><label class="form-label">已发放</label><input type="number" class="form-control" id="actPoolCurrent" step="1" value="0"></div>
+                                    <div class="col-md-3"><label class="form-label">开始时间</label><input type="datetime-local" class="form-control" id="actStart"></div>
+                                    <div class="col-md-3"><label class="form-label">结束时间</label><input type="datetime-local" class="form-control" id="actEnd"></div>
+                                    <div class="col-md-3"><label class="form-label">目标用户</label>
+                                        <select class="form-select" id="actTarget">
+                                            <option value="all">全部用户</option>
+                                            <option value="new_users">新用户</option>
+                                            <option value="existing_users">老用户</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12"><label class="form-label">活动说明</label><input type="text" class="form-control" id="actDesc" placeholder="简要说明活动内容"></div>
+                                </div>
+                                <div class="d-flex gap-2 mt-3 flex-wrap">
+                                    <button class="btn-pill btn-primary-pill" id="btnCreateActivity" style="padding:8px 20px"><i class="fas fa-save"></i> 保存活动</button>
+                                    <button class="btn-pill btn-outline-pill d-none" id="btnCancelEditActivity" style="padding:8px 20px">取消编辑</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive" style="max-height:320px;overflow-y:auto">
+                            <table class="table-clean mini-table">
+                                <thead><tr><th>ID</th><th>标题</th><th>类型</th><th>单次奖励</th><th>奖池总额</th><th>已发放</th><th>时间</th><th>状态</th><th style="text-align:right">操作</th></tr></thead>
+                                <tbody id="adminActivityTbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="adminActivityEmpty" class="empty-state d-none"><i class="fas fa-calendar-day"></i><p>暂无活动</p></div>
+                    </div>
+
+                    <!-- 设置 -->
+                    <div class="atab-panel d-none" id="atabSettings">
+                        <div class="row g-3">
+                            <div class="col-md-4 col-6"><label class="form-label">注册赠送积分</label><input type="number" class="form-control" id="setSignupCredits"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">每次部署消耗</label><input type="number" class="form-control" id="setDeployCost"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">每次访问消耗</label><input type="number" step="0.1" class="form-control" id="setVisitCost"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">每月赠送积分</label><input type="number" class="form-control" id="setMonthlyGift"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">邀请人奖励</label><input type="number" class="form-control" id="setRefReferrer"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">被邀请人奖励</label><input type="number" class="form-control" id="setRefInvitee"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">续期消耗积分</label><input type="number" class="form-control" id="setRenewCost"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">站点有效期（天）</label><input type="number" class="form-control" id="setValidDays"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">每次续期天数</label><input type="number" class="form-control" id="setRenewDays"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">续期宽限期（天）</label><input type="number" class="form-control" id="setGraceDays"></div>
+                            <div class="col-md-4 col-6"><label class="form-label">最低充值（元）</label><input type="number" class="form-control" id="setRechargeMin"></div>
+                        </div>
+                        <div class="d-flex gap-2 mt-3 flex-wrap">
+                            <button class="btn-pill btn-primary-pill" id="btnSaveSettings" style="padding:8px 20px"><i class="fas fa-save"></i> 保存设置</button>
+                            <button class="btn-pill btn-outline-pill" id="btnGrantGift" style="padding:8px 20px"><i class="fas fa-gift"></i> 立即发放本月积分</button>
+                        </div>
+                        <hr>
+                        <h6 class="fw-bold">创建管理员</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4"><input type="text" class="form-control" id="newAdminUser" placeholder="用户名"></div>
+                            <div class="col-md-4"><input type="password" class="form-control" id="newAdminPass" placeholder="密码"></div>
+                            <div class="col-md-4"><button class="btn-pill btn-outline-pill w-100" id="btnMakeAdmin" style="padding:9px"><i class="fas fa-user-shield"></i> 创建</button></div>
+                        </div>
+                    </div>
+
+                    <!-- 站点 -->
+                    <div class="atab-panel d-none" id="atabProjects">
+                        <div class="table-responsive" style="max-height:420px;overflow-y:auto">
+                            <table class="table-clean mini-table">
+                                <thead><tr><th>ID</th><th>项目</th><th>站点地址</th><th>用户</th><th>访问</th><th>有效期</th><th style="text-align:right">操作</th></tr></thead>
+                                <tbody id="adminProjectTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 流水 -->
+                    <div class="atab-panel d-none" id="atabLogs">
+                        <div class="table-responsive" style="max-height:420px;overflow-y:auto">
+                            <table class="table-clean mini-table">
+                                <thead><tr><th>ID</th><th>用户</th><th>类型</th><th>说明</th><th>变动</th><th>余额</th><th>时间</th></tr></thead>
+                                <tbody id="adminLogTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-area" id="toastArea"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/app.js"></script>
+</body>
+</html>
